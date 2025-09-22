@@ -85,10 +85,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ initialConversationDbId, initia
       console.error("No access token available for sending message.");
       return; // Prevent sending message if no token
     }
-    
-    // --- THIS IS THE FIX ---
-    // Safely convert the conversation DB ID from a number to a string for the API call.
-    const conversationIdString = currentConversationDbId ? currentConversationDbId.toString() : null;
 
     const newUserMessage: Message = {
       id: Date.now().toString(),
@@ -99,8 +95,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ initialConversationDbId, initia
     setIsLoading(true);
 
     try {
-      // Use the newly created 'conversationIdString' in the function call
+      // ==================================================================
+      // THIS IS THE FIX: Convert the number to a string before the API call
+      // ==================================================================
+      const conversationIdString = currentConversationDbId ? currentConversationDbId.toString() : null;
+
       const assistantResponse = await sendMessageToAssistant(text, currentThreadId, conversationIdString, session.access_token);
+      // ==================================================================
 
       if (assistantResponse.openai_thread_id) { // Use openai_thread_id from response
         setCurrentThreadId(assistantResponse.openai_thread_id);
@@ -113,4 +114,86 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ initialConversationDbId, initia
         id: (Date.now() + Math.random()).toString(), // Unique ID
         text: assistantResponse.result, // Use result from response
         sender: "bot",
-        m
+        model: "AI Companion",
+        explanation: assistantResponse.explanation || undefined, // Pass undefined if empty
+      };
+      setMessages((prevMessages) => [...prevMessages, newBotMessage]);
+
+    } catch (error) {
+      console.error("Failed to get AI response in ChatWindow:", error);
+      const errorMessageText = error instanceof Error ? error.message : "An unexpected error occurred.";
+      const errorMessage: Message = {
+        id: (Date.now() + Math.random()).toString(),
+        text: `Error: ${errorMessageText}`,
+        sender: "bot",
+        model: "AI Companion",
+        explanation: "An error occurred while fetching the response.",
+      };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="card w-full max-w-[600px] h-[calc(100vh-200px)] min-h-[500px] max-h-[700px] shadow-2xl flex flex-col overflow-hidden transition-all duration-300 hover:shadow-glow mx-auto border-2 border-primary/20">
+      {/* Chat Header */}
+      <div className="bg-gradient-to-r from-primary to-secondary p-4 rounded-t-xl shadow-lg relative overflow-hidden flex-shrink-0">
+        {/* Header background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/5"></div>
+        <div className="relative z-10 text-center">
+          <img src="/icons/Echo Logo.png" alt="Echo Therapy Logo" className="h-10 w-auto mx-auto mb-0" />
+          <p className="text-gray-500 text-sm">Navigating your thoughts with a caring AI companion</p>
+        </div>
+      </div>
+      {/* Messages Area */}
+      <div 
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto px-4 py-1 space-y-3 bg-gradient-to-b from-primary/5 to-white/95 custom-scrollbar"
+      >
+        {messages.length === 0 && !isLoading && (
+          <div className="text-center text-gray-500 flex flex-col items-center justify-center h-full animate-fadeInUp">
+            <div className="mb-4 bg-gradient-to-br from-primary/5 to-white/95 w-20 h-20 rounded-full flex items-center justify-center shadow-xl glow-primary border-2 border-white/70">
+            </div>
+            <p className="text-2xl font-semibold mb-2 text-gradient">
+              Welcome!
+            </p>
+          </div>
+        )}
+        {messages.map((msg) => (
+          <MessageBubble key={msg.id} message={msg} />
+        ))}
+        <div ref={messagesEndRef} className="h-1" /> {/* Scroll anchor */}
+      </div>
+      {/* Loading Indicator */}
+      {isLoading && (
+        <div className="px-4 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm flex-shrink-0">
+          <div className="flex items-center justify-center">
+            <div className="flex space-x-2">
+              <div className="loading-dot" style={{ animationDelay: "0ms" }}></div>
+              <div className="loading-dot" style={{ animationDelay: "150ms" }}></div>
+              <div className="loading-dot" style={{ animationDelay: "300ms" }}></div>
+            </div>
+            <span className="text-sm ml-3 font-medium text-gradient">
+              ECHO is thinking...
+            </span>
+          </div>
+        </div>
+      )}
+      
+      {/* Message Input */}
+      <MessageInput onSendMessage={handleSendMessage} isLoading={isLoading} />
+      
+      {/* Disclaimer Footer */}
+      <div className="bg-gradient-to-r from-primary to-secondary p-4 rounded-b-xl shadow-lg relative overflow-hidden flex-shrink-0">
+        {/* Footer background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/5"></div>
+        <div className="relative z-10 text-center">
+          <p className="text-gray-500 text-sm">DISCLAIMER: I am not a therapist & cannot provide medical advice or crisis support. If you are in crisis, contact emergency services or a <a href="https://findahelpline.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">crisis hotline</a>.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ChatWindow;
