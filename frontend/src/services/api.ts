@@ -1,6 +1,6 @@
 import type { ChatServiceRequest, ChatServiceResponse } from '@/types'; // Using the more specific types
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export const sendMessageToAssistant = async (
   text: string,

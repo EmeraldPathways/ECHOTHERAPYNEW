@@ -70,13 +70,6 @@ const NavBar: React.FC = () => {
                     Profile
                   </a>
                 </Link>
-                <Link href="/past-conversations" legacyBehavior>
-                  <a onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium ${
-                    router.pathname === '/past-conversations' ? 'text-blue-700 bg-blue-50' : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900'
-                  }`}>
-                    History
-                  </a>
-                </Link>
                 <Link href="/about-us" legacyBehavior>
                   <a onClick={() => setIsOpen(false)} className={`block px-3 py-2 rounded-md text-base font-medium ${
                     router.pathname === '/about-us' ? 'text-blue-700 bg-blue-50' : 'text-gray-900 hover:bg-gray-50 hover:text-gray-900'
