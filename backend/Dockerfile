@@ -22,4 +22,4 @@ EXPOSE 8080
 # Define the command to run your app.
 # Gunicorn is a production-ready server. Uvicorn is used as the worker class for async apps.
 # Assumes your FastAPI/Starlette instance is named "app" in "main.py"
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--worker-class", "uvicorn.workers.UvicornWorker", "main:app"]
+CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker main:app
