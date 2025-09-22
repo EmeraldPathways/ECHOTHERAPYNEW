@@ -9,6 +9,7 @@ gcloud run deploy $BACKEND_SERVICE \
   --source ./backend \
   --region $REGION \
   --allow-unauthenticated \
+  --set-secrets="SUPABASE_URL=supabase-url:latest,SUPABASE_KEY=supabase-key:latest,STRIPE_SECRET_KEY=stripe-secret-key:latest,OPENAI_API_KEY=openai-api-key:latest" \
   --project $PROJECT_ID
 
 echo "Backend deployment finished."
