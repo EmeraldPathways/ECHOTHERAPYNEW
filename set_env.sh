@@ -2,7 +2,7 @@
 
 # --- CONFIGURATION ---
 # Replace "your-gcp-project-id" with your actual Google Cloud Project ID.
-export PROJECT_ID="490220453822"
+export PROJECT_ID="./backend/deploy_backend.sh"
 
 # You can change the region if you want, but us-central1 is a good default.
 export REGION="us-central1"
