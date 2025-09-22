@@ -2,7 +2,7 @@
 
 # --- CONFIGURATION ---
 # Replace "your-gcp-project-id" with your actual Google Cloud Project ID.
-export PROJECT_ID="./backend/deploy_backend.sh"
+export PROJECT_ID="echo-therapy-new"
 
 # You can change the region if you want, but us-central1 is a good default.
 export REGION="us-central1"
