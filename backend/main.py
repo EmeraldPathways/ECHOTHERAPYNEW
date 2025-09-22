@@ -358,5 +358,6 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
     return {"status": "success"}
 
 if __name__ == "__main__":
-    if "serve" in sys.argv:
-        uvicorn.run(app, host="0.0.0.0", port=8001)
+    # Get the port from the environment variable, defaulting to 8000 if not found
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
