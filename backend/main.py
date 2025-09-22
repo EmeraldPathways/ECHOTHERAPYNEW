@@ -21,6 +21,24 @@ load_dotenv()
 # Then initialize FastAPI and other clients
 app = FastAPI()
 
+# --- Environment Variable Validation ---
+# This block checks for all required secrets at startup.
+# If any are missing, it will print a clear error and exit.
+required_env_vars = [
+    "SUPABASE_URL",
+    "SUPABASE_KEY",
+    "STRIPE_SECRET_KEY",
+    "OPENAI_API_KEY"
+]
+
+missing_vars = [var for var in required_env_vars if os.getenv(var) is None]
+
+if missing_vars:
+    print(f"FATAL ERROR: The following environment variables are not set: {', '.join(missing_vars)}")
+    print("The application cannot start.")
+    sys.exit(1) # Exit with a non-zero status code to indicate failure
+# --- End of Validation Block ---
+
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 global_supabase_url = os.getenv("SUPABASE_URL")
 global_supabase_key = os.getenv("SUPABASE_KEY")
